@@ -23,8 +23,7 @@ jobs:
         uses: act10ns/slack@v1
         with:
           status: ${{ job.status }}
-#          steps: ${{ toJson(steps) }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          field: ${{ toJson(steps) }}
           channel: '#actions'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
