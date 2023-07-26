@@ -4,11 +4,11 @@ services:
   backend:
     build:
       context: .
-      args:
-        - DEV=true
+#      args:
+#        - DEV=true
     container_name: 'backend_container'
     volumes:
-      - .:/app:ro
+      - .:/app
     ports:
       - "8000:8000"
     command: >
