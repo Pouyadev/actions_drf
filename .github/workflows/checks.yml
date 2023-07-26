@@ -20,7 +20,8 @@ jobs:
       - name: Lint
         run : docker-compose run --rm backend bash -c "flake8"
       - name: Slack Notification
-        uses: 8398a7/action-slack@v3
+#        uses: 8398a7/action-slack@v3
+        uses: ac10ns/slack@v1
         with:
           status: ${{ job.status }}
 #          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
