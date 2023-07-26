@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      args:
+        - DEV=true
+    container_name: 'backend_container'
+    volumes:
+      - .:/app:ro
+    ports:
+      - "8000:8000"
+    command: >
+      bash -c "python manage.py migrate &&
+      python manage.py makemigrations &&
+      python manage.py runserver 0.0.0.0:8000"
