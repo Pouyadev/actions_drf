@@ -10,7 +10,7 @@ COPY requirements.txt .
 
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt && \
-    if [$DEV = true ] ; \
+    if [$DEV = "true" ] ; \
         then pip install flake8 ; \
     fi && \
     rm requirements.txt && \
@@ -19,8 +19,9 @@ RUN pip install --upgrade pip && \
         --no-create-home \
         django-user
 
+COPY . .
+
 USER django-user
 
-COPY . .
 
 EXPOSE 8000
