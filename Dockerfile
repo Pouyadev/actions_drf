@@ -1,32 +1,31 @@
-FROM python:3.10.4
+FROM python:3.11.4-alpine3.18
+LABEL maintainer="Pouyab"
 
+ENV PIP_DISABLE_PIP_VERSION_CHECK 1
+ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 ARG DEV=false
 
 WORKDIR /app
 
-COPY requirements.txt .
-COPY requirements.dev.txt .
+COPY requirements.txt ./tmp/requirements.txt
+COPY requirements.dev.txt ./tmp/requirements.dev.txt
 
 
-RUN pip install --upgrade pip && \
-#    apk add --update --no-cache postgresql-client && \
-#    apk add --update --no-cache --virtual .tmp-build-deps \
-#        build-base postgresql-dev musl-dev && \
-    pip install -r requirements.txt && \
-    if [$DEV = "true" ]; \
-        then pip install -r requirements.dev.txt ; \
+RUN pip install -r ./tmp/requirements.txt && \
+    if [ $DEV = "true" ]; \
+        then pip install -r ./tmp/requirements.dev.txt ; \
     fi && \
-#    rm -rf temp && \
-#    apk del .tmp-build-deps && \
+    rm -rf tmp && \
     adduser \
         --disabled-password \
         --no-create-home \
         django-user
 
+
 USER django-user
 
-COPY . /app
+COPY . .
 
 EXPOSE 8000

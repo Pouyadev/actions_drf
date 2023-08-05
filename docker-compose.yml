@@ -4,14 +4,12 @@ services:
   db:
     image: postgres:15-alpine
     container_name: "db_container"
-    environment:
-      - POSTGRES_DB=actions_drf_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    env_file:
+      - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5423:5432"
+      - "5432:5432"
 
   backend:
     build:
@@ -19,17 +17,15 @@ services:
       args:
         - DEV=true
     container_name: "backend_container"
-    environment:
-      - DB_NAME=actions_drf_db
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_HOST=db
+    env_file:
+      - .env
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     command: >
-      bash -c "python manage.py migrate &&
+      sh -c "python manage.py wait_for_db &&
+      python manage.py migrate &&
       python manage.py makemigrations &&
       python manage.py runserver 0.0.0.0:8000"
     depends_on:
