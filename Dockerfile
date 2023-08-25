@@ -13,16 +13,23 @@ COPY requirements.txt ./tmp/requirements.txt
 COPY requirements.dev.txt ./tmp/requirements.dev.txt
 
 
-RUN pip install -r ./tmp/requirements.txt && \
+RUN apk add --update --no-cache jpeg-dev gcc musl-dev file-dev libmagic && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        zlib zlib-dev && \
+    pip install -r ./tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then pip install -r ./tmp/requirements.dev.txt ; \
     fi && \
-    rm -rf tmp && \
+    rm -rf /tmp && \
+    apk del .tmp-build-deps && \
     adduser \
         --disabled-password \
         --no-create-home \
-        django-user
-
+        django-user && \
+    mkdir -p /vol/web/static && \
+    mkdir -p /vol/web/media && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol
 
 USER django-user
 

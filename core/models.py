@@ -1,6 +1,15 @@
 from django.db import models
-from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser, PermissionsMixin)
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.utils.text import slugify
+from uuid import uuid4
+import os
+
+
+def recipe_image_file_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f'{slugify(instance.title)}_{uuid4()}.{ext}'
+
+    return os.path.join('uploads', 'recipe', filename)
 
 
 class UserManager(BaseUserManager):
@@ -29,3 +38,34 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
     USERNAME_FIELD = 'email'
+
+
+class Tag(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class Ingredient(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class Recipe(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    tag = models.ManyToManyField(Tag)
+    ingredient = models.ManyToManyField(Ingredient)
+    title = models.CharField(max_length=50)
+    time_minute = models.PositiveSmallIntegerField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    description = models.TextField(max_length=500)
+    link = models.URLField(max_length=200)
+    image = models.ImageField(upload_to=recipe_image_file_path, null=True, blank=True)
+
+    def __str__(self):
+        return self.title
